@@ -2,7 +2,7 @@
 模型推理和计数脚本
 用于批量处理图像并统计花粉数量
 """
-from ultralytics import YOLO
+from ultralytics.models import YOLO
 import os
 import cv2
 import pandas as pd

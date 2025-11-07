@@ -21,3 +21,4 @@ PyYAML>=6.0
 # 其他工具
 tqdm>=4.65.0
 requests>=2.31.0
+scikit-learn>=1.2.0

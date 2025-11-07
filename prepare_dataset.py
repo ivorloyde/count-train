@@ -104,6 +104,90 @@ def split_dataset(source_images_dir, source_labels_dir,
     print("数据集分割完成！")
 
 
+def split_dataset_sklearn(source_images_dir, source_labels_dir,
+                          dataset_path='./dataset',
+                          val_size=0.2, test_size=0.1, random_state=42):
+    """
+    使用 sklearn.model_selection.train_test_split 对数据集进行随机划分并复制到目标目录。
+
+    参数:
+        source_images_dir: 原始图像目录（字符串或 Path）
+        source_labels_dir: 原始标注目录（字符串或 Path）
+        dataset_path: 目标数据集路径
+        val_size: 验证集比例（相对于全部数据）
+        test_size: 测试集比例（相对于全部数据）
+        random_state: 随机种子
+
+    注意：该函数不做分层（stratify），因为每张图像可能包含多个目标。若需要分层，请自行实现基于标签统计的分层逻辑。
+    """
+    from pathlib import Path
+    from sklearn.model_selection import train_test_split
+
+    source_images_dir = Path(source_images_dir)
+    source_labels_dir = Path(source_labels_dir)
+    dataset_path = Path(dataset_path)
+
+    image_extensions = ['.jpg', '.jpeg', '.png', '.bmp']
+    image_paths = []
+    for ext in image_extensions:
+        image_paths.extend(sorted(source_images_dir.glob(f'*{ext}')))
+        image_paths.extend(sorted(source_images_dir.glob(f'*{ext.upper()}')))
+
+    image_paths = list(dict.fromkeys(image_paths))  # 去重并保持顺序
+    total = len(image_paths)
+    if total == 0:
+        print('未在 source_images_dir 中找到任何图像文件')
+        return
+
+    # 首先划分出 test 集
+    trainval_paths, test_paths = train_test_split(
+        image_paths, test_size=test_size, random_state=random_state
+    )
+
+    # 然后从 trainval 中划分出 val（相对于 trainval 的比例）
+    if (1 - test_size) <= 0:
+        raise ValueError('test_size 过大，剩余用于 train/val 的数据为 0')
+    val_ratio_relative = val_size / (1 - test_size)
+
+    train_paths, val_paths = train_test_split(
+        trainval_paths, test_size=val_ratio_relative, random_state=random_state
+    )
+
+    # 创建目标目录
+    dirs = [
+        dataset_path / 'images' / 'train',
+        dataset_path / 'images' / 'val',
+        dataset_path / 'images' / 'test',
+        dataset_path / 'labels' / 'train',
+        dataset_path / 'labels' / 'val',
+        dataset_path / 'labels' / 'test',
+    ]
+    for d in dirs:
+        d.mkdir(parents=True, exist_ok=True)
+
+    def copy_list(paths, split_name):
+        for p in paths:
+            # 复制图像
+            dst_img = dataset_path / 'images' / split_name / p.name
+            shutil.copy2(p, dst_img)
+
+            # 复制对应标注文件（.txt）
+            label_file = source_labels_dir / f"{p.stem}.txt"
+            if label_file.exists():
+                dst_label = dataset_path / 'labels' / split_name / f"{p.stem}.txt"
+                shutil.copy2(label_file, dst_label)
+
+    copy_list(train_paths, 'train')
+    copy_list(val_paths, 'val')
+    copy_list(test_paths, 'test')
+
+    print(f"总图像数: {total}")
+    print(f"训练集: {len(train_paths)}")
+    print(f"验证集: {len(val_paths)}")
+    print(f"测试集: {len(test_paths)}")
+    print('使用 sklearn 划分完成！')
+
+
 def convert_labelme_to_yolo(labelme_json_path, output_txt_path, img_width, img_height, class_mapping):
     """
     将LabelMe格式的JSON标注转换为YOLO格式

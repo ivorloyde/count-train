@@ -1,10 +1,11 @@
 """
 YOLOv11 花粉识别与计数模型训练脚本
 """
-from ultralytics import YOLO
+from ultralytics.models import YOLO
 import os
 import yaml
 from pathlib import Path
+from prepare_dataset import split_dataset_sklearn, create_dataset_structure
 
 
 def create_dataset_yaml(dataset_path='./dataset'):
@@ -142,6 +143,37 @@ def main():
     """
     # 1. 设置路径
     dataset_path = './dataset'
+    # 如果 dataset 下没有划分好的 train/val/test，则尝试使用 sklearn 的 train_test_split
+    images_train_dir = os.path.join(dataset_path, 'images', 'train')
+    need_split = True
+    if os.path.exists(images_train_dir):
+        # 检查目录中是否有图像文件
+        has_files = any(os.scandir(images_train_dir))
+        if has_files:
+            need_split = False
+
+    if need_split:
+        # 尝试在若干候选源目录中找到原始图片与标注
+        candidate_pairs = [
+            ('./source_images', './source_labels'),
+            ('./raw_images', './raw_labels'),
+            ('./data/images', './data/labels'),
+            ('./images_all', './labels_all'),
+        ]
+
+        found = False
+        for src_img, src_lbl in candidate_pairs:
+            if os.path.exists(src_img) and os.path.exists(src_lbl):
+                print(f"发现原始数据：{src_img} 和 {src_lbl}，使用 sklearn 划分到 {dataset_path}")
+                # 确保目标目录存在
+                create_dataset_structure(dataset_path)
+                # 使用默认比例：val=0.2, test=0.1
+                split_dataset_sklearn(src_img, src_lbl, dataset_path=dataset_path, val_size=0.2, test_size=0.1, random_state=42)
+                found = True
+                break
+
+        if not found:
+            print("未找到原始数据用于自动划分；请将原始图像和标注放入其中一个候选目录，或手动创建 dataset 下的 train/val/test 结构。候选目录包括: ./source_images & ./source_labels, ./raw_images & ./raw_labels, ./data/images & ./data/labels, ./images_all & ./labels_all")
     
     # 2. 创建数据集配置文件
     data_yaml = create_dataset_yaml(dataset_path)

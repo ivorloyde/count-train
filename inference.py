@@ -49,8 +49,12 @@ class PollenCounter:
         
         result = results[0]
         boxes = result.boxes
-        count = len(boxes)
-        confidences = [box.conf[0].item() for box in boxes]
+        if boxes is None:
+            count = 0
+            confidences = []
+        else:
+            count = len(boxes)
+            confidences = [box.conf[0].item() for box in boxes]
         
         if visualize or save_path:
             self.visualize_results(image_path, result, save_path)
@@ -132,19 +136,35 @@ class PollenCounter:
             save_path: 保存路径
         """
         image = cv2.imread(str(image_path))
+        if image is None:
+            # 明确报错或直接返回，以避免将 None 传入 cv2 的绘制函数
+            raise FileNotFoundError(f"Unable to read image: {image_path}")
         boxes = result.boxes
-        
+
+        # 如果没有检测到任何框，仍然显示或保存原图并写入总计数为 0
+        if boxes is None or len(boxes) == 0:
+            total_count = 0
+            cv2.putText(image, f"Total: {total_count}", (10, 30),
+                       cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            if save_path:
+                cv2.imwrite(save_path, image)
+            else:
+                cv2.imshow('Pollen Detection', image)
+                cv2.waitKey(0)
+                cv2.destroyAllWindows()
+            return
+
         for box in boxes:
-            # 获取边界框坐标
+            # 获取边界框坐标并确保为 int
             x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
             conf = box.conf[0].item()
             
-            # 绘制边界框
-            cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            # 绘制边界框（确保传入的坐标为整型）
+            cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
             
             # 添加标签
             label = f"Pollen {conf:.2f}"
-            cv2.putText(image, label, (x1, y1 - 10), 
+            cv2.putText(image, label, (int(x1), int(y1 - 10)), 
                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
         
         # 添加总计数
@@ -170,70 +190,10 @@ class PollenCounter:
             show_frame_count: 是否在视频上显示帧计数
         """
         cap = cv2.VideoCapture(video_path)
-        
-        # 获取视频属性
-        fps = int(cap.get(cv2.CAP_PROP_FPS))
-        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        
-        # 创建视频写入器
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        out = cv2.VideoWriter(output_video_path, fourcc, fps, (width, height))
-        
-        frame_count = 0
-        total_counts = []
-        
-        print("开始处理视频...")
-        while cap.isOpened():
-            ret, frame = cap.read()
-            if not ret:
-                break
-            
-            frame_count += 1
-            
-            # 对当前帧进行预测
-            results = self.model.predict(
-                source=frame,
-                conf=self.conf_threshold,
-                iou=self.iou_threshold,
-                verbose=False
-            )
-            
-            result = results[0]
-            boxes = result.boxes
-            count = len(boxes)
-            total_counts.append(count)
-            
-            # 绘制检测结果
-            for box in boxes:
-                x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
-                conf = box.conf[0].item()
-                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                label = f"{conf:.2f}"
-                cv2.putText(frame, label, (x1, y1 - 10),
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-            
-            # 添加计数信息
-            if show_frame_count:
-                cv2.putText(frame, f"Frame: {frame_count}", (10, 30),
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-            cv2.putText(frame, f"Count: {count}", (10, 60),
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-            
-            out.write(frame)
-            
-            if frame_count % 30 == 0:
-                print(f"已处理 {frame_count} 帧...")
-        
-        cap.release()
-        out.release()
-        
-        print(f"\n视频处理完成！")
-        print(f"输出视频: {output_video_path}")
-        print(f"总帧数: {frame_count}")
-        print(f"平均花粉数: {sum(total_counts)/len(total_counts):.2f}")
-        print(f"最大花粉数: {max(total_counts)}")
-
+        # 视频处理在当前工作流程中不需要。保留该方法以避免外部调用失败，但不执行任何视频相关操作。
+        print("视频处理已被禁用：当前脚本仅支持图片预测。请使用 count_single_image 或 count_batch_images。")
+        return None
+    
 
 def main():
     """
@@ -259,7 +219,7 @@ def main():
     #     output_dir='./results'
     # )
     
-    # 4. 视频计数示例
+    # 4. 视频计数示例（已禁用）
     # counter.count_video(
     #     video_path='path/to/video.mp4',
     #     output_video_path='output_video.mp4'

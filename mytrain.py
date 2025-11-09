@@ -1,10 +1,10 @@
 from ultralytics import YOLO
 
 if __name__ == "__main__":
-    model = YOLO(r'yolov11n.pt')
+    model = YOLO(r'yolo11n.pt')
 
     model.train(
-        data=r"ultralytics/assets",
+        data=r"coco8.yaml",
         epochs=10,
         batch=-1,
         imgsz=1280,

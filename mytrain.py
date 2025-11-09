@@ -4,10 +4,10 @@ if __name__ == "__main__":
     model = YOLO(r'yolo11m.pt')
 
     model.train(
-        data=r"pollen.yaml",
+        data=r"pollenv2.yaml",
         epochs=100,
         batch=-1,
-        imgsz=1280,
+        imgsz=640,
         cache="ram",
         workers=1
     )

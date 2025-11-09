@@ -1,0 +1,2 @@
+train2 :目前最优，4张图(pollen)，eprchs=100,imagez=640。
+train3 :会将气泡识别进去，28张图(pollenv2)，epoch=100，imagez=640.

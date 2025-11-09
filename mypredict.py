@@ -1,9 +1,10 @@
 from ultralytics.models import YOLO
 
-model = YOLO(r'yolo11n.pt')
+model = YOLO(r'D:\基因组所工作\14.计数训练\runs\detect\train\weights\best.pt')
 
 model.predict(
-    source=r"ultralytics/assets",
+    source=r"D:\基因组所工作\数据集\pollen\others",
     save=True,
     show=False,
+    save_txt=True,
 )

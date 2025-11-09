@@ -5,9 +5,9 @@ if __name__ == "__main__":
 
     model.train(
         data=r"pollen.yaml",
-        epochs=3,
+        epochs=100,
         batch=-1,
-        imgsz=640,
+        imgsz=1280,
         cache="ram",
         workers=1
     )

@@ -5,7 +5,7 @@ if __name__ == "__main__":
 
     model.train(
         data=r"coco8.yaml",
-        epochs=10,
+        epochs=2,
         batch=-1,
         imgsz=640,
         cache="ram",

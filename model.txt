@@ -1,2 +1,9 @@
-train2 :目前最优，4张图(pollen)，eprchs=100,imagez=640。
-train3 :会将气泡识别进去，28张图(pollenv2)，epoch=100，imagez=640.
+train2 :0.989，4张图(pollen)，eprchs=100,imagez=640,yolo11m
+train3 :0.955，28张图(pollenv2)，epoch=100，imagez=640,yolo11m
+train6 :0.981，4张图（pollen），eprchs=100,imagez=640,yolo11l
+train7 :0.990，4张图（pollen），eprchs=100,imagez=800,yolo11l
+train9 :0.990，4张图（pollen），eprchs=150,imagez=640,yolo11m
+train10 :0.991，4张图（pollen），eprchs=150,imagez=800,yolo11l
+train11 :0.992，4张图（pollen），eprchs=175,imagez=800,yolo11l
+train12 :0.992，4张图（pollen），eprchs=200,imagez=800,yolo11l
+train12 :0.992，4张图（pollen），eprchs=250,imagez=800,yolo11l

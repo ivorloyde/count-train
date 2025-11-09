@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 
 if __name__ == "__main__":
-    model = YOLO(r'yolo11n.pt')
+    model = YOLO(r'yolo11m.pt')
 
     model.train(
         data=r"pollen.yaml",

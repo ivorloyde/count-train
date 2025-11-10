@@ -1,13 +1,13 @@
 from ultralytics import YOLO
 
 if __name__ == "__main__":
-    model = YOLO(r'yolo11l.pt')
+    model = YOLO(r'yolo12s.pt')
 
     model.train(
-        data=r"pollen.yaml",
-        epochs=250,
+        data=r"pollenv5.yaml",
+        epochs=100,
         batch=-1,
-        imgsz=800,
+        imgsz=640,
         cache="ram",
         workers=1
     )

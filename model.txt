@@ -6,4 +6,13 @@ train9 :0.990，4张图（pollen），eprchs=150,imagez=640,yolo11m
 train10 :0.991，4张图（pollen），eprchs=150,imagez=800,yolo11l
 train11 :0.992，4张图（pollen），eprchs=175,imagez=800,yolo11l
 train12 :0.992，4张图（pollen），eprchs=200,imagez=800,yolo11l
-train12 :0.992，4张图（pollen），eprchs=250,imagez=800,yolo11l
+train13 :0.992，4张图（pollen），eprchs=250,imagez=800,yolo11l
+train14 :0.987，4张图（pollen），eprchs=200,imagez=800,yolov8l
+train15 :0.989，4张图（pollen），eprchs=100,imagez=640,yolo11s
+train16 :0.958，35张图（pollenv5），eprchs=100,imagez=640,yolo11s，效果还可以，没把气泡识别进去，会把背景识别错
+train17 :0.952，35张图（pollenv5），eprchs=150,imagez=800,yolo11s，效果还可以，没把气泡识别进去，会把背景识别错
+train18 :0.955，35张图（pollenv5），eprchs=150,imagez=800,yolo12m，效果一般，把气泡识别进去，会把背景识别错
+train19 :0.952，35张图（pollenv5），eprchs=150,imagez=640,yolo12l，效果一般，把气泡识别进去，会把背景识别错
+train20 :0.955，35张图（pollenv5），eprchs=150,imagez=640,yolo12m，效果一般，把气泡识别进去，会把背景识别错
+train21 :0.929，35张图（pollenv5），eprchs=150,imagez=960,yolo12m，效果一般，把气泡识别进去还当成两个，会把背景识别错
+train22 :0.956，35张图（pollenv5），eprchs=100,imagez=640,yolo12s，效果还可以，气泡识别较少，会把背景识别错

@@ -1,5 +1,6 @@
-import os
 import glob
+import os
+
 from ultralytics import YOLO
 
 # 假设你想遍历的文件夹路径是 'path_to_folder'
@@ -12,6 +13,5 @@ for pt_file in glob.glob(os.path.join(path_to_folder, "best.pt")):
     success = model.export(format="onnx")
 
 
-
-#命令行输入
-#yolo export model=D:/基因组所工作/14.计数训练/runs/detect/train14/weights/best.pt format=onnx
+# 命令行输入
+# yolo export model=D:/基因组所工作/14.计数训练/runs/detect/train14/weights/best.pt format=onnx
